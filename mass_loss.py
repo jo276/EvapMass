@@ -167,7 +167,7 @@ def min_mass_gaseous(p_rocky,p_gas,Tkh_scale_myr,Xiron,Xice,age_Myr):
         #print("Error, could not find a lower bound to solve from")
         return -6., -6
 
-    result = minimize_scalar(tdot_gas_minimise,bounds=(Mcore_min_try,Mcore_max),args=input_args,method="bounded")
+    result = minimize_scalar(tmdot_gas_minimise,bounds=(Mcore_min_try,Mcore_max),args=input_args,method="bounded")
 
     if result.success:
 
