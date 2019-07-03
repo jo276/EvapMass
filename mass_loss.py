@@ -277,3 +277,5 @@ def tmdot_gas_minimise(Mcore,input_args):
     # now return 1 over solution as we want to maximise tmdot_gas
 
     return 1./tmdot_gas
+
+#testing commit
