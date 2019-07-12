@@ -85,7 +85,6 @@ def integrand2(x,gamma):
 
 def get_I2_I1(DR_Rc,gamma):
 
-
     ratio = np.zeros(np.size(DR_Rc))
 
     for i in range(np.size(DR_Rc)):
@@ -260,8 +259,7 @@ def Rp_solver(Rp,Teq,Mcore,Tkh_Myr,Xiron,Xice):
     Rcore = mass_to_radius_solid(Mcore,Xiron,Xice) * earth_radius_to_cm
 
     if (Rp < Rcore):
-        # error this is not a valid solution for the mass, need to exit
-
+        #error this is not a valid solution for the mass, need to exit
         return -1., -1., -1.
 
     lg_D_Rrcb_guess = np.log10(Rp-Rcore)
@@ -272,6 +270,8 @@ def Rp_solver(Rp,Teq,Mcore,Tkh_Myr,Xiron,Xice):
     # now evaluate planet structure
 
     Delta_Rrcb = 10.**lg_D_Rrcb_sol
+    print('Delta_Rrcb')
+    print(Delta_Rrcb)
 
     X, f, Rplanet = evaluate_X(Delta_Rrcb,Teq,Mcore,Tkh_Myr,Xiron,Xice)
 
@@ -295,3 +295,22 @@ def Rp_solver_function(lg_D_Rrcb,input_args):
     X, f, Rplanet = evaluate_X(Delta_Rrcb,Teq,Mcore,Tkh_Myr,Xiron,Xice)
 
     return Rp-Rplanet
+
+#Test plot
+def testing_plot(input_args_test):
+
+  #values for Delta_Rrcb
+  x_data = np.arange(10**6., 10.**8.,10000)
+  y_data = []
+  for value in x_data:
+      y_new_value = Rp_solver_function(np.log10(value), input_args = input_args_test)
+      y_data.append(y_new_value)
+
+  #print(y_data)
+  plt.plot(x_data, y_data)
+  plt.hlines(0, 10**6., 10**8.)
+  plt.vlines(14219995.4, min(y_data), 10)
+  #plt.ylim(min(y_data),50)
+  plt.show()
+
+  return

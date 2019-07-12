@@ -116,7 +116,6 @@ def find_hardest_rocky(system,tmdot_Myr,Xiron,Xice):
     return system
 
 def min_mass_gaseous(p_rocky,p_gas,Tkh_scale_myr,Xiron,Xice,age_Myr):
-
     # we wish to find the minimum mass for the gaseous planet given
     # the mass-loss time-scale for the rocky planet
 
@@ -130,6 +129,7 @@ def min_mass_gaseous(p_rocky,p_gas,Tkh_scale_myr,Xiron,Xice,age_Myr):
     Rcore = p_gas.radius/1.15
 
     Mcore_max = ps.solid_radius_to_mass(Rcore,Xiron,Xice)
+
 
     input_args=[]
     input_args.append(p_gas.Teq)
@@ -146,9 +146,12 @@ def min_mass_gaseous(p_rocky,p_gas,Tkh_scale_myr,Xiron,Xice,age_Myr):
     # check solver will actually give a solution for this low a core-mass upto 1 Earth mass
 
     while Mcore_min_try < Mcore_max:
+
         sol = tmdot_gas_minimise(Mcore_min_try,input_args)
         if sol < 0.:
+            print(Mcore_min_try)
             Mcore_min_try += 0.1
+
             #print("Increased Mcore_min_try to:",Mcore_min_try, "Mcore_max = ", Mcore_max)
         else:
             if (1./sol < p_rocky.tmdot):
@@ -234,12 +237,12 @@ def mass_gas_to_solve(lg_Mcore,input_args):
     # we now want to check that the Rp solver converged by comparing Rp_solver
     # with the actual radius of the planet
 
+
     if (np.fabs(Rp_solver-Rplanet_now)/Rplanet_now > 1e-4):
         # Rp_solver failed to converge
-
         #print("Rp_solver failed to converge, trying again")
-
-
+        #print(Rp_solver)
+        #print(Rplanet_now)
         return -1.
 
     # now given this envelope mass fraction calculate its radius at time to scale to
