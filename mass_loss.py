@@ -123,13 +123,12 @@ def min_mass_gaseous(p_rocky,p_gas,Tkh_scale_myr,Xiron,Xice,age_Myr):
     # we do this by finding the maximum-mass loss timescale and checking it does
     # go above the one we want
 
-    # first find the maximum core mass to check-up to (i.e. when 15% of the
+    # first find the maximum core mass to check-up to (i.e. when 10% of the
     # planet's radius comes from the convective envelope)
 
-    Rcore = p_gas.radius/1.15
+    Rcore = p_gas.radius/1.1
 
     Mcore_max = ps.solid_radius_to_mass(Rcore,Xiron,Xice)
-
 
     input_args=[]
     input_args.append(p_gas.Teq)
@@ -142,14 +141,13 @@ def min_mass_gaseous(p_rocky,p_gas,Tkh_scale_myr,Xiron,Xice,age_Myr):
     input_args.append(0.) # tmdot_want is zero for the maximisation
 
     Mcore_min_try = 0.1 # just use 0.1 earth masses as this is not constrining
-
     # check solver will actually give a solution for this low a core-mass upto 1 Earth mass
 
     while Mcore_min_try < Mcore_max:
 
         sol = tmdot_gas_minimise(Mcore_min_try,input_args)
         if sol < 0.:
-            print(Mcore_min_try)
+            #print(Mcore_min_try)
             Mcore_min_try += 0.1
 
             #print("Increased Mcore_min_try to:",Mcore_min_try, "Mcore_max = ", Mcore_max)

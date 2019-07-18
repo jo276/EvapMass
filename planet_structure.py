@@ -244,6 +244,31 @@ def evaluate_X(Delta_Rrcb,Teq,Mcore,Tkh_Myr,Xiron,Xice):
 
     return X,f,Rplanet
 
+def evaluate_X_rad(Rp,Teq,Mcore,Tkh_Myr,Xiron,Xice):
+
+    # we only use this if the solver returns a adiabatic layer
+    # size smaller than a scale height
+    # this occurs when the approximation between equations 2 & 3
+    # in owen & Wu (2017) breaks down
+
+    # now calculate the densities at the photosphere
+    Pressure_phot = (2./3. * (G*Mcore*earth_mass_to_g/(Rp**2.*kappa0*Teq**beta)))**(1./(1.+alpha))
+    rho_phot_calc = (mu/kb) * Pressure_phot / Teq
+
+    H = kb * Teq * Rp ** 2. / ( mu * G * Mcore*earth_mass_to_g)
+
+    # now determine mass in radiative layer
+    Rcore = mass_to_radius_solid(Mcore,Xiron,Xice) * earth_radius_to_cm
+
+    rho_base = rho_phot_calc * np.exp(Rp/H*(Rp/Rcore-1.))
+
+    Menv = 4.*np.pi*Rcore**2.*H*rho_base
+
+    X = Menv/(Mcore*earth_mass_to_g)
+
+    return X, Rp/Rcore, Rp
+
+
 def Rp_solver(Rp,Teq,Mcore,Tkh_Myr,Xiron,Xice):
 
     #this solves for the planet structure to match radii
@@ -270,10 +295,13 @@ def Rp_solver(Rp,Teq,Mcore,Tkh_Myr,Xiron,Xice):
     # now evaluate planet structure
 
     Delta_Rrcb = 10.**lg_D_Rrcb_sol
-    print('Delta_Rrcb')
-    print(Delta_Rrcb)
+    H= kb * Teq * Rp**2. / (mu * G * Mcore * earth_mass_to_g)
 
-    X, f, Rplanet = evaluate_X(Delta_Rrcb,Teq,Mcore,Tkh_Myr,Xiron,Xice)
+    if (Delta_Rrcb/H < 1.):
+        #print("Warning, no convective zone found")
+        X, f, Rplanet = evaluate_X_rad(Rp,Teq,Mcore,Tkh_Myr,Xiron,Xice)
+    else:
+        X, f, Rplanet = evaluate_X(Delta_Rrcb,Teq,Mcore,Tkh_Myr,Xiron,Xice)
 
     return X, f, Rplanet
 
