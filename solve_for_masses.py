@@ -26,7 +26,7 @@ class psystem:
         # calculate extra info for planets
         # equilibrium temperature
         for p in self.planets:
-            p.a = ( G * Msun / (2.*np.pi / (p.period * day_to_sec))**2. ) **(1./3.)
+            p.a = ( G * self.star.mass * Msun / (2.*np.pi / (p.period * day_to_sec))**2. ) **(1./3.)
             p.Teq = self.star.Teff * np.sqrt(self.star.radius*Rsun/(2.*p.a))
 
     def above_or_below_valley(self):
@@ -112,7 +112,7 @@ def estimate_min_masses(planet_systems,Tmdot,Xiron,Xice):
                 planet.min_mass = min_mass
                 planet.min_mass_converged = converged # if equal to 1 solution converged, otherwise not
 
-    return 
+    return
 
 def above_or_below_valley(system):
     for planet in system.planets:
