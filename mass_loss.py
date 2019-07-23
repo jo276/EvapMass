@@ -161,7 +161,8 @@ def min_mass_gaseous(p_rocky,p_gas,Tkh_scale_myr,Xiron,Xice,age_Myr):
                 # or if happening for 0.1 Mearth then this is a reasonable upper-limit
                 #print("Error could not find suitable lower mass bound")
 
-                return -Mcore_min_try, -5
+                #return -Mcore_min_try, -5
+                return -5., -5
 
     if sol < 0.:
         # solver cannot find a suitable lower mass bound it can solve for
@@ -181,8 +182,8 @@ def min_mass_gaseous(p_rocky,p_gas,Tkh_scale_myr,Xiron,Xice,age_Myr):
             p_gas.min_mass_sol=False
             p_gas.max_tmdot_core=tmdot_max_mcore
 
-            return -Mcore_max, -2
-
+            #return -Mcore_max, -2
+            return -2., -2
     else:
 
         # failed to find maximum core mass for gaseous planet
@@ -197,7 +198,8 @@ def min_mass_gaseous(p_rocky,p_gas,Tkh_scale_myr,Xiron,Xice,age_Myr):
 
         # solution must be lower than Mcore_min_try Mearth
 
-        return -Mcore_min_try, -1
+        #return -Mcore_min_try, -1
+        return -1., -1
 
     # to make it this far in the code the minimum mass from photoevaporation
     # must lie between Mcore_min_try Mearth and tmdot_max_mcore so we can use an interval

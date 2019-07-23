@@ -126,3 +126,20 @@ def define_valley(radius,period):
         return 1
     else:
         return 0
+
+
+def error_calculation(value, upper_error, lower_error):
+    list_of_values = []
+    value = value
+    u = upper_error
+    l = lower_error
+    for number in range(0,1000,1):
+        value_mean = (2.*value + u + l)/2.
+        value_std = (u-l)/2.
+        value_random = np.random.normal(value_mean, value_std)
+        list_of_values.append(value_random)
+
+    new_value = np.mean(list_of_values)
+    new_value_std = np.std(list_of_values)
+
+    return new_value , new_value_std

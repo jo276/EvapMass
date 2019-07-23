@@ -297,6 +297,10 @@ def Rp_solver(Rp,Teq,Mcore,Tkh_Myr,Xiron,Xice):
     Delta_Rrcb = 10.**lg_D_Rrcb_sol
     H= kb * Teq * Rp**2. / (mu * G * Mcore * earth_mass_to_g)
 
+    #X, f, Rplanet = evaluate_X(Delta_Rrcb,Teq,Mcore,Tkh_Myr,Xiron,Xice)
+
+
+
     if (Delta_Rrcb/H < 1.):
         #print("Warning, no convective zone found")
         X, f, Rplanet = evaluate_X_rad(Rp,Teq,Mcore,Tkh_Myr,Xiron,Xice)

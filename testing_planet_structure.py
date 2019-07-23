@@ -9,7 +9,7 @@ planet_systems = []
 
 system_counter = 0
 new_system = True
-"""
+
 for index, row in data.iterrows():
     if (row['koi_disposition'] != 'FALSE POSITIVE'):
         if (index == 0):
@@ -25,11 +25,29 @@ for index, row in data.iterrows():
                 planet_systems.append(em.psystem(row['id_kic']))
 
         if (new_system):
-            planet_systems[system_counter].star.mass = row['iso_smass']
-            planet_systems[system_counter].star.radius = row['iso_srad']
-            planet_systems[system_counter].star.Teff = row['iso_steff']
-            planet_systems[system_counter].star.age = row['iso_sage'] \
-            * 1e9 / 1e6 # want age in Myr
+            planet_systems[system_counter].star.mass, \
+            planet_systems[system_counter].star.mass_std = \
+            em.error_calculation(row['iso_smass'], row['iso_smass_err1'], \
+            row['iso_smass_err2'])
+
+
+            planet_systems[system_counter].star.radius, \
+            planet_systems[system_counter].star.radius_std =  \
+            em.error_calculation(row['iso_srad'], row['iso_srad_err1'], \
+            row['iso_srad_err2'])
+
+            planet_systems[system_counter].star.Teff, \
+            planet_systems[system_counter].star.Teff_std = \
+            em.error_calculation(row['iso_steff'], row['iso_steff_err1'], \
+            row['iso_steff_err2'])
+
+
+            planet_systems[system_counter].star.age, \
+            planet_systems[system_counter].star.age_std  = \
+            em.error_calculation(row['iso_sage'] * 1e9 / 1e6, \
+            row['iso_sage_err1'] * 1e9 / 1e6, row['iso_sage_err2'] * 1e9 / 1e6)
+            # want age in Myr
+
             new_system = False
 
 
@@ -68,22 +86,33 @@ em.estimate_min_masses(mixed_systems,Tmdot_Myr,Xiron,Xice)
 """
 counter = 0
 total_planets=0
-failing_six = []
-
+#failing_six = []
+systems_data = []
+planets_data = []
+min_masses = []
+mass_data = []
+radius_data = []
 for system in mixed_systems:
     #print("System is", system.planets[0].name)
     for planet in system.planets:
+        systems_data.append(system.name)
+        planets_data.append(planet.name)
+        radius_data.append(planet.radius)
         if planet.rocky_or_gaseous == 0:
             #print(planet.min_mass_converged)
+            mass_data.append("n/a")
+            min_masses.append(planet.min_mass)
+            #if (planet.min_mass_converged == -6):
+                #failing_planets.append(planet.name)
+                #counter +=1
 
-            if (planet.min_mass_converged == -6):
-                failing_planets.append(planet.name)
-                counter +=1
 
-
-            total_planets +=1
+            #total_planets +=1
             #print(planet.min_mass)
             #print(planet.radius)
+        else:
+            mass_data.append(planet.mass)
+            min_masses.append("n/a")
 """
 for system in mixed_systems:
     for planet in system.planets:
@@ -113,17 +142,21 @@ for system in mixed_systems:
 
                 #failing_six.append(planet.name)
 
-
-
-
+"""
 #print(input_args_plot)
 
-ps.testing_plot(input_args_plot)
+#ps.testing_plot(input_args_plot)
 #print('Number of inconsistent planets')
 #print(counter)
 #print('failing six')
 #print(failing_six)
-
-
 #print('Fraction is')
 #print(counter*1./(total_planets*1.))
+
+test_data = {'System name': systems_data, 'Planet name': planets_data, \
+'Radius': radius_data, 'Mass': mass_data, 'Minimum mass': min_masses}
+
+test_df = pd.DataFrame(data = test_data, columns=['System name', 'Planet name', \
+'Radius','Mass', 'Minimum mass'])
+
+test_df.to_csv('test_data_2.csv')
