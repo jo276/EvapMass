@@ -147,7 +147,6 @@ def min_mass_gaseous(p_rocky,p_gas,Tkh_scale_myr,Xiron,Xice,age_Myr):
 
         sol = tmdot_gas_minimise(Mcore_min_try,input_args)
         if sol < 0.:
-            #print(Mcore_min_try)
             Mcore_min_try += 0.1
 
             #print("Increased Mcore_min_try to:",Mcore_min_try, "Mcore_max = ", Mcore_max)

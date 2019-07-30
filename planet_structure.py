@@ -133,7 +133,8 @@ def solve_structure(X,Teq,Mcore,Tkh_Myr,Xiron,Xice):
     rho_rcb = get_rho_rcb(lg_D_Rrcb_sol,X,Mcore,Teq,Tkh_Myr,Xiron,Xice)
 
     # now calculate the densities at the photosphere
-    Pressure_phot = (2./3. * (G*Mcore*earth_mass_to_g/(Rrcb_sol**2.*kappa0*Teq**beta)))**(1./(1.+alpha))
+    Pressure_phot = (2./3. * (G*Mcore*earth_mass_to_g/\
+                            (Rrcb_sol**2.*kappa0*Teq**beta)))**(1./(1.+alpha))
     rho_phot_calc = (mu/kb) * Pressure_phot / Teq
 
     # now find f factor
@@ -169,13 +170,13 @@ def Rrcb_function(lg_D_Rrcb,input_args):
 
     rho_rcb = get_rho_rcb(lg_D_Rrcb,X,Mcore,Teq,Tkh_Myr,Xiron,Xice)
 
-    #rho_rcb = (mu / kb) *(I2_I1*64.*np.pi*sigma*Teq**(3.-alpha-beta)*Rrcb*TKh_sec / (3.*kappa0*Mcore*earth_mass_to_g*X))**(1./(1.+alpha))
 
     I2 = get_I2(np.array([Delta_R_Rc]),gamma)
 
     cs2 = kb * Teq / mu
 
-    Xguess=3.*(Rrcb/Rcore)**3.*(rho_rcb/rho_core)*(grad_ab * (G * Mcore * earth_mass_to_g)/(cs2 * Rrcb))**(1./(gamma-1.))*I2
+    Xguess=3.*(Rrcb/Rcore)**3.*(rho_rcb/rho_core)*(grad_ab * \
+              (G * Mcore * earth_mass_to_g)/(cs2 * Rrcb))**(1./(gamma-1.))*I2
 
     return Xguess - X
 
@@ -194,7 +195,8 @@ def get_rho_rcb(lg_D_Rrcb,X,Mcore,Teq,Tkh_Myr,Xiron,Xice):
 
     TKh_sec = Tkh_Myr * 1.e6 * year_to_sec
 
-    rho_rcb = (mu / kb) *(I2_I1*64.*np.pi*sigma*Teq**(3.-alpha-beta)*Rrcb*TKh_sec / (3.*kappa0*Mcore*earth_mass_to_g*X))**(1./(1.+alpha))
+    rho_rcb = (mu / kb) *(I2_I1*64.*np.pi*sigma*Teq**(3.-alpha-beta)\
+               *Rrcb*TKh_sec / (3.*kappa0*Mcore*earth_mass_to_g*X))**(1./(1.+alpha))
 
     return rho_rcb
 
@@ -219,9 +221,12 @@ def evaluate_X(Delta_Rrcb,Teq,Mcore,Tkh_Myr,Xiron,Xice):
 
     TKh_sec = Tkh_Myr * 1.e6 * year_to_sec
 
-    rho_rcb_without_X_term = (mu / kb) *(I2_I1*64.*np.pi*sigma*Teq**(3.-alpha-beta)*Rrcb*TKh_sec / (3.*kappa0*Mcore*earth_mass_to_g))**(1./(1.+alpha))
+    rho_rcb_without_X_term = (mu / kb) *(I2_I1*64.*np.pi*sigma*\
+                             Teq**(3.-alpha-beta)*Rrcb*TKh_sec / \
+                             (3.*kappa0*Mcore*earth_mass_to_g))**(1./(1.+alpha))
 
-    LHS = 3.*(Rrcb/Rcore)**3.*(rho_rcb_without_X_term/rho_core)*(grad_ab * (G * Mcore * earth_mass_to_g)/(cs2 * Rrcb))**(1./(gamma-1.))*I2
+    LHS = 3.*(Rrcb/Rcore)**3.*(rho_rcb_without_X_term/rho_core)*\
+    (grad_ab * (G * Mcore * earth_mass_to_g)/(cs2 * Rrcb))**(1./(gamma-1.))*I2
 
     X = LHS**(1./(1.+1./(1.+alpha)))
 
@@ -231,7 +236,9 @@ def evaluate_X(Delta_Rrcb,Teq,Mcore,Tkh_Myr,Xiron,Xice):
     rho_rcb = get_rho_rcb(np.log10(Delta_Rrcb),X,Mcore,Teq,Tkh_Myr,Xiron,Xice)
 
     # now calculate the densities at the photosphere
-    Pressure_phot = (2./3. * (G*Mcore*earth_mass_to_g/(Rrcb**2.*kappa0*Teq**beta)))**(1./(1.+alpha))
+    Pressure_phot = (2./3. * (G*Mcore*earth_mass_to_g/\
+                              (Rrcb**2.*kappa0*Teq**beta)))**(1./(1.+alpha))
+    
     rho_phot_calc = (mu/kb) * Pressure_phot / Teq
 
     # now find f factor
@@ -290,23 +297,18 @@ def Rp_solver(Rp,Teq,Mcore,Tkh_Myr,Xiron,Xice):
     lg_D_Rrcb_guess = np.log10(Rp-Rcore)
     lg_D_Rrcb_sol = fsolve(Rp_solver_function,lg_D_Rrcb_guess,args=input_args)
 
-    #lg_D_Rrcb_sol = brentq(Rp_solver_function,np.log10(1e2),np.log10(1e12),args=input_args)
 
     # now evaluate planet structure
 
     Delta_Rrcb = 10.**lg_D_Rrcb_sol
     H= kb * Teq * Rp**2. / (mu * G * Mcore * earth_mass_to_g)
 
-    #X, f, Rplanet = evaluate_X(Delta_Rrcb,Teq,Mcore,Tkh_Myr,Xiron,Xice)
-
-
-
     if (Delta_Rrcb/H < 1.):
         #print("Warning, no convective zone found")
         X, f, Rplanet = evaluate_X_rad(Rp,Teq,Mcore,Tkh_Myr,Xiron,Xice)
     else:
         X, f, Rplanet = evaluate_X(Delta_Rrcb,Teq,Mcore,Tkh_Myr,Xiron,Xice)
-
+    
     return X, f, Rplanet
 
 
@@ -328,21 +330,3 @@ def Rp_solver_function(lg_D_Rrcb,input_args):
 
     return Rp-Rplanet
 
-#Test plot
-def testing_plot(input_args_test):
-
-  #values for Delta_Rrcb
-  x_data = np.arange(10**6., 10.**8.,10000)
-  y_data = []
-  for value in x_data:
-      y_new_value = Rp_solver_function(np.log10(value), input_args = input_args_test)
-      y_data.append(y_new_value)
-
-  #print(y_data)
-  plt.plot(x_data, y_data)
-  plt.hlines(0, 10**6., 10**8.)
-  plt.vlines(14219995.4, min(y_data), 10)
-  #plt.ylim(min(y_data),50)
-  plt.show()
-
-  return

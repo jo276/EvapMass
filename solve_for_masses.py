@@ -18,8 +18,8 @@ class psystem:
         self.planets = []  # list of planets
         self.index_rocky_to_scale = -1 # set to minus one initially for error checking
 
-    def add_planet(self,name,radius,period):
-        self.planets.append(planet(name,radius,period))
+    def add_planet(self,name,radius,radius_std,period,period_std):
+        self.planets.append(planet(name,radius,radius_std,period,period_std))
         self.number_of_planets += 1
 
     def update_planet_info(self):
@@ -32,7 +32,7 @@ class psystem:
     def above_or_below_valley(self):
         count = 0
         for p in self.planets:
-            p.rocky_or_gaseous = define_valley(p.radius,p.period)
+            p.rocky_or_gaseous = define_valley(p.radius, p.radius_std, p.period)
             count += p.rocky_or_gaseous
 
         self.num_rocky_planets = count
@@ -51,17 +51,23 @@ class psystem:
 class star:
     def __init__(self):
         self.mass=0.
+        self.mass_std = 0.
         self.age = 5000. # default of 5 Gyr given in Myr
+        self.age_std = 0.
         self.radius = 0.
+        self.radius_std = 0.
         self.Teff = 0.
+        self.Teff_std = 0.
 
 class planet:
-    def __init__(self,Name,Radius,Period):
+    def __init__(self,Name, Radius, Radius_std, Period, Period_std):
         self.name = Name
         self.radius = Radius
+        self.radius_std = Radius_std
         self.period = Period
+        self.period_std = Period_std
         self.rocky_or_gaseous = -1 # negative to start for error checking
-        self.mass = -1. # set to negative to start for error checking
+        self.mass = -1.  # set to negative to start for error checking
 
 def setup_systems(planet_systems,Tmdot,Xiron,Xice):
     # this function takes the list of planetary multi-planet mixed_systems
@@ -116,27 +122,29 @@ def estimate_min_masses(planet_systems,Tmdot,Xiron,Xice):
 
 def above_or_below_valley(system):
     for planet in system.planets:
-        planet.rocky_or_gaseous = define_valley(planet.radius,planet.period)
+        planet.rocky_or_gaseous = define_valley(planet.radius, \
+        planet.radius_std, planet.period)
 
     return
 
-def define_valley(radius,period):
-    # use crude single value
+def define_valley(radius, radius_std, period):
     if radius < 1.8:
+        #rocky planet
         return 1
     else:
+        #gaseous planet
         return 0
 
 
 def error_calculation(value, upper_error, lower_error):
+    #function to account for guassian like errors on the stellar and planetary parameters
     list_of_values = []
     value = value
     u = upper_error
     l = lower_error
     for number in range(0,1000,1):
-        value_mean = (2.*value + u + l)/2.
-        value_std = (u-l)/2.
-        value_random = np.random.normal(value_mean, value_std)
+        value_std = np.sqrt(u**2. + l**2)
+        value_random = np.random.normal(value, value_std)
         list_of_values.append(value_random)
 
     new_value = np.mean(list_of_values)
