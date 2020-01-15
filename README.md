@@ -4,4 +4,4 @@ The planetary system requires both a planet above and below the radius gap to be
 
 There is an example jupyter notebook for the Kepler-36 system. 
 
-The paper on this code can be read here: https://arxiv.org/abs/1912.01609v1
+The paper on this code can be read here: https://academic.oup.com/mnras/article/491/4/5287/5663631
