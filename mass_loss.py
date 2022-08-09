@@ -122,7 +122,7 @@ def tmdot_structure(Delta_Rrcb,input_args):
 
     return 1./func_to_max
 
-def find_hardest_rocky(system,tmdot_Myr,Xiron,Xice,eff_option):
+def find_hardest_rocky(system,tmdot_Myr,Xiron,Xice,eff_option=3):
 
     tmax = 0.
     index_hardest=-1 # set to negative number to spot errors
@@ -151,7 +151,7 @@ def find_hardest_rocky(system,tmdot_Myr,Xiron,Xice,eff_option):
 
     return system
 
-def min_mass_gaseous(p_rocky,p_gas,Tkh_scale_myr,Xiron,Xice,age_Myr,eff_option):
+def min_mass_gaseous(p_rocky,p_gas,Tkh_scale_myr,Xiron,Xice,age_Myr,eff_option=3):
     # we wish to find the minimum mass for the gaseous planet given
     # the mass-loss time-scale for the rocky planet
 
