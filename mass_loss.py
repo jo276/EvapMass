@@ -6,28 +6,56 @@ import numpy as np
 import planet_structure as ps
 from scipy.optimize import minimize_scalar
 from f_constants import *
+from microphysics_params import *
 from scipy.optimize import brentq
+import OJ12_eff_interpolator as OJ12
 
 
 # this file contains the details of mass-loss models
-def efficiency(Mp,Rp):
+def efficiency(Mp,Rp,eff_option=3):
 
     # calculates the mass-loss efficiency
 
+    ## option 1 - constant efficiency
+    ## option 2 - power-law fit in escape velocity by Owen & Wu (2017)
+    ## option 3 - scaled fit to Owen & Jackson (2012) mass-loss rates [DEFAULT]
+    ## option x - your own efficiency calculation
+
     # constant efficiency
 
-    # eff = 0.1
+    if (eff_option == 1):
+        eff = 0.1
     # return eff
 
     # variable efficiency from Owen & Wu (2017)
+    elif (eff_option == 2):
+        vesc = np.sqrt ( 2. * G * Mp / Rp )
 
-    vesc = np.sqrt ( 2. * G * Mp / Rp )
+        eff = 0.1 * (vesc / 1.5e6)**(-2.)
 
-    eff = 0.1 * (vesc / 1.5e6)**(-2.)
+    elif (eff_option == 3):
+
+    ### efficiencies from Owen & Jackson (2012) hydrodynamic models
+
+    ## check size of planet compared to Hill radius
+    ## planet's bigger than hill radius on OJ12 table undergoing Roche lobe overflow and 
+    ## their effective efficiency is infinity if so just set to very high number
+    ## if this is true the interpolator returns a value of the efficiency scaled parameter 
+
+
+        eff = OJ12.get_scaled_hydro_eff(Rp,Mp)
+
+    #print (eff,Mp,Rp)
+
+    else:
+        print ("ERROR efficiency option not found")
+        print ("Using constant efficiency")
+        eff = 0.1
+
 
     return eff
 
-def tmdot_rocky(planet,tmdot_Myr,Xiron,Xice):
+def tmdot_rocky(planet,tmdot_Myr,Xiron,Xice,eff_option=3):
 
     # this function calculates a scaled-mass-loss time for the rocky planet_systems
     # namely it find the envelope mass-fraction at which the mass-loss timescale
@@ -51,9 +79,11 @@ def tmdot_rocky(planet,tmdot_Myr,Xiron,Xice):
         # now evaluate planet properties
         X,f,Rplanet = ps.evaluate_X(DR_maximised,planet.Teq,planet.mass,tmdot_Myr,Xiron,Xice)
 
-        eff = efficiency(planet.mass*earth_mass_to_g,Rplanet)
+        eff = efficiency(planet.mass*earth_mass_to_g,Rplanet,eff_option)
 
-        tmdot_max = X * planet.mass **2. * planet.a**2. * eff / Rplanet **3.
+        tmdot_max = X * planet.mass **2. * planet.a**2. / eff / Rplanet **3.
+
+        #print(X, Rplanet/earth_radius_to_cm)
 
         return DR_maximised,X,f,Rplanet,tmdot_max
 
@@ -63,7 +93,7 @@ def tmdot_rocky(planet,tmdot_Myr,Xiron,Xice):
         return -1.
 
 
-def tmdot_structure(Delta_Rrcb,input_args):
+def tmdot_structure(Delta_Rrcb,input_args,eff_option=3):
 
     # this is the mass-loss time-scale function we wish to maximise
 
@@ -80,17 +110,17 @@ def tmdot_structure(Delta_Rrcb,input_args):
     # as we wish to maximise the mass-loss timescale at fixed-core mass
     # we wish to find the Delta_Rrcb which maximises:
 
-    # tmdot \propto func_to_max = X * eta (Mp,Rp) / Rp^3
+    # tmdot \propto func_to_max = X / eta (Mp,Rp) / Rp^3 (equation 5 of paper)
 
-    eta = efficiency(Mcore*earth_mass_to_g,Rplanet)
+    eta = efficiency(Mcore*earth_mass_to_g,Rplanet,eff_option)
 
-    func_to_max = X * eta / Rplanet **3.
+    func_to_max = X / eta / Rplanet **3.
 
     # since rountine works to minimize function return 1/func_to_max
 
     return 1./func_to_max
 
-def find_hardest_rocky(system,tmdot_Myr,Xiron,Xice):
+def find_hardest_rocky(system,tmdot_Myr,Xiron,Xice,eff_option=3):
 
     tmax = 0.
     index_hardest=-1 # set to negative number to spot errors
@@ -99,7 +129,7 @@ def find_hardest_rocky(system,tmdot_Myr,Xiron,Xice):
     counter = 0
     for planet in system.planets:
         if (planet.rocky_or_gaseous == 1):
-            DR_maximised,X,f,Rplanet,t_rocky = tmdot_rocky(planet,tmdot_Myr,Xiron,Xice)
+            DR_maximised,X,f,Rplanet,t_rocky = tmdot_rocky(planet,tmdot_Myr,Xiron,Xice,eff_option)
             if (t_rocky > tmax ):
                 tmax = t_rocky
                 Xmax = X
@@ -115,7 +145,7 @@ def find_hardest_rocky(system,tmdot_Myr,Xiron,Xice):
 
     return system
 
-def min_mass_gaseous(p_rocky,p_gas,Tkh_scale_myr,Xiron,Xice,age_Myr):
+def min_mass_gaseous(p_rocky,p_gas,Tkh_scale_myr,Xiron,Xice,age_Myr,eff_option=3):
     # we wish to find the minimum mass for the gaseous planet given
     # the mass-loss time-scale for the rocky planet
 
@@ -139,6 +169,7 @@ def min_mass_gaseous(p_rocky,p_gas,Tkh_scale_myr,Xiron,Xice,age_Myr):
     input_args.append(age_Myr)
     input_args.append(p_gas.a)
     input_args.append(0.) # tmdot_want is zero for the maximisation
+    input_args.append(eff_option)
 
     Mcore_min_try = 0.1 # just use 0.1 earth masses as this is not constrining
     # check solver will actually give a solution for this low a core-mass upto 1 Earth mass
@@ -213,6 +244,18 @@ def min_mass_gaseous(p_rocky,p_gas,Tkh_scale_myr,Xiron,Xice,age_Myr):
 
     Msol = 10.**Msol
 
+    ## now check solution doesn't have thin convective zone
+    X,f,Rp_solver = ps.Rp_solver(p_gas.radius*earth_radius_to_cm,p_gas.Teq,Msol,Tkh_scale_myr,Xiron,Xice)
+    Rrcb_sol, f, Rplanet_t_scale, Delta_R =  ps.solve_structure(X,p_gas.Teq,Msol,Tkh_scale_myr,Xiron,Xice)
+    H= kb * p_gas.Teq * (p_gas.radius*earth_radius_to_cm)**2. / (mu * G * Msol * earth_mass_to_g)
+
+    if (Delta_R/H < 1.):
+        ## planet structure has a convective zone smaller than one scale height
+        ## use result with caution
+
+        print ("Warning solution has thin convective zone")
+        return Msol, 2
+
     return Msol, 1
 
 def mass_gas_to_solve(lg_Mcore,input_args):
@@ -225,6 +268,7 @@ def mass_gas_to_solve(lg_Mcore,input_args):
     Planet_age_Myr = input_args[5]
     sep_cm = input_args[6]
     tmdot_want = input_args[7]
+    eff_option = input_args[8]
 
     # first thing is give the radius of the planet today and current core mass
     # we need to evaluate the envelope mass fraction
@@ -260,9 +304,9 @@ def mass_gas_to_solve(lg_Mcore,input_args):
 
     Rplanet = Rplanet_t_scale
 
-    eff = efficiency(Mcore*earth_mass_to_g,Rplanet)
+    eff = efficiency(Mcore*earth_mass_to_g,Rplanet,eff_option)
 
-    tmdot_gaseous = X * Mcore**2. * sep_cm**2. * eff / Rplanet**3.
+    tmdot_gaseous = X * Mcore**2. * sep_cm**2. / eff / Rplanet**3.
 
     return tmdot_gaseous - tmdot_want
 

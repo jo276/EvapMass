@@ -301,13 +301,14 @@ def Rp_solver(Rp,Teq,Mcore,Tkh_Myr,Xiron,Xice):
     # now evaluate planet structure
 
     Delta_Rrcb = 10.**lg_D_Rrcb_sol
-    H= kb * Teq * Rp**2. / (mu * G * Mcore * earth_mass_to_g)
+    #H= kb * Teq * Rp**2. / (mu * G * Mcore * earth_mass_to_g)
+    ## Moved this test to elsewhere in the code
 
-    if (Delta_Rrcb/H < 1.):
+    #if (Delta_Rrcb/H < 1.):
         #print("Warning, no convective zone found")
-        X, f, Rplanet = evaluate_X_rad(Rp,Teq,Mcore,Tkh_Myr,Xiron,Xice)
-    else:
-        X, f, Rplanet = evaluate_X(Delta_Rrcb,Teq,Mcore,Tkh_Myr,Xiron,Xice)
+        #X, f, Rplanet = evaluate_X_rad(Rp,Teq,Mcore,Tkh_Myr,Xiron,Xice)
+    #else:
+    X, f, Rplanet = evaluate_X(Delta_Rrcb,Teq,Mcore,Tkh_Myr,Xiron,Xice)
     
     return X, f, Rplanet
 
