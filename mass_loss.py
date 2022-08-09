@@ -23,8 +23,6 @@ def efficiency(Mp,Rp,eff_option=3):
 
     # constant efficiency
 
-    print (eff_option)
-
     if (eff_option == 1):
         eff = 0.1
     # return eff
@@ -57,7 +55,7 @@ def efficiency(Mp,Rp,eff_option=3):
 
     return eff
 
-def tmdot_rocky(planet,tmdot_Myr,Xiron,Xice,eff_option=3):
+def tmdot_rocky(planet,tmdot_Myr,Xiron,Xice,eff_option):
 
     # this function calculates a scaled-mass-loss time for the rocky planet_systems
     # namely it find the envelope mass-fraction at which the mass-loss timescale
@@ -69,6 +67,7 @@ def tmdot_rocky(planet,tmdot_Myr,Xiron,Xice,eff_option=3):
     input_args.append(tmdot_Myr)
     input_args.append(Xiron)
     input_args.append(Xice)
+    input_args.append(eff_option)
 
     DR_min = 0.1*planet.radius * earth_radius_to_cm
     DR_max = 5.*planet.radius * earth_radius_to_cm
@@ -95,7 +94,7 @@ def tmdot_rocky(planet,tmdot_Myr,Xiron,Xice,eff_option=3):
         return -1.
 
 
-def tmdot_structure(Delta_Rrcb,input_args,eff_option=3):
+def tmdot_structure(Delta_Rrcb,input_args):
 
     # this is the mass-loss time-scale function we wish to maximise
 
@@ -106,6 +105,7 @@ def tmdot_structure(Delta_Rrcb,input_args,eff_option=3):
     Tkh_Myr = input_args[2]
     Xiron = input_args[3]
     Xice = input_args[4]
+    eff_option = input_args[5]
 
     X,f,Rplanet = ps.evaluate_X(Delta_Rrcb,Teq,Mcore,Tkh_Myr,Xiron,Xice)
 
@@ -122,7 +122,7 @@ def tmdot_structure(Delta_Rrcb,input_args,eff_option=3):
 
     return 1./func_to_max
 
-def find_hardest_rocky(system,tmdot_Myr,Xiron,Xice,eff_option=3):
+def find_hardest_rocky(system,tmdot_Myr,Xiron,Xice,eff_option):
 
     tmax = 0.
     index_hardest=-1 # set to negative number to spot errors
@@ -151,7 +151,7 @@ def find_hardest_rocky(system,tmdot_Myr,Xiron,Xice,eff_option=3):
 
     return system
 
-def min_mass_gaseous(p_rocky,p_gas,Tkh_scale_myr,Xiron,Xice,age_Myr,eff_option=3):
+def min_mass_gaseous(p_rocky,p_gas,Tkh_scale_myr,Xiron,Xice,age_Myr,eff_option):
     # we wish to find the minimum mass for the gaseous planet given
     # the mass-loss time-scale for the rocky planet
 
