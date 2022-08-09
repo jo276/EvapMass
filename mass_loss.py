@@ -23,6 +23,8 @@ def efficiency(Mp,Rp,eff_option=3):
 
     # constant efficiency
 
+    print (eff_option)
+
     if (eff_option == 1):
         eff = 0.1
     # return eff
@@ -135,6 +137,10 @@ def find_hardest_rocky(system,tmdot_Myr,Xiron,Xice,eff_option=3):
                 Xmax = X
                 index_hardest = counter
         counter += 1
+
+    if (counter ==0):
+        print ("Error no rocky planet in system found to scale")
+
 
     system.index_rocky_to_scale = index_hardest
 
