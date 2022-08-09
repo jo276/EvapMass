@@ -11,7 +11,7 @@ Update - August 2022
 
 A. Error fix - the efficiency parameter was incorrectly implemented in the mass_loss.py routines for the escape velocity scaling. Thanks goes to Ryan Cloutier and Madison Van Wyngarden for noticing this. 
 
-B. The efficiency parameter options have been exteneded through the use of an eff_option flag:
+B. The efficiency parameter options have been extended through the use of an eff_option flag:
 
 Option 1 - constant efficiency
 Option 2 - escape velocity scaling
