@@ -27,3 +27,5 @@ The location of the valley can now be chosen by the user with the flag 'valley_l
 Explanations of output flags:
 -2: no solution
 -5: mini-Neptune has a mass-loss timescale that is larger than the super-Earth for 0.1Mearth.
+
+Note for the probability density plots - area under the histogram is 1, not the sum of the heights.
