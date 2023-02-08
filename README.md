@@ -3,7 +3,7 @@ EvapMass uses the photoevaporation driven evolution model of Owen & Wu (2013,201
 
 The planetary system requires both a planet above and below the radius valley to be useful for this test. Where the valley is defined is dependent on the system's host star - make a careful and informed choice. We recommend checking the radius valley slopes predicted by van Eylen et al. (2018,2021).
 
-There is an example jupyter notebook for the Kepler-36 system (Intro_notebook.ipynb) and a notebook which can be easily used to test any system (general_notebook.ipynb) (Feb 2023 update).
+There is an example jupyter notebook for the Kepler-36 system (Intro_notebook.ipynb) and a notebook which can be easily used to test any system (general_notebook.ipynb) (Feb 2023 update). One can find the predicted minimum mass with the mean values of the stellar and planetary parameters or do a Monte Carlo sampling 3000 times and the minimum mass is then given as a 95% upper-limit (unless otherwise stated).
 
 The paper on this code can be read here: https://academic.oup.com/mnras/article/491/4/5287/5663631
 
