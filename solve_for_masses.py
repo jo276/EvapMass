@@ -29,10 +29,10 @@ class psystem:
             p.a = ( G * self.star.mass * Msun / (2.*np.pi / (p.period * day_to_sec))**2. ) **(1./3.)
             p.Teq = self.star.Teff * np.sqrt(self.star.radius*Rsun/(2.*p.a))
 
-    def above_or_below_valley(self):
+    def above_or_below_valley(self, valley_loc=1.8):
         count = 0
         for p in self.planets:
-            p.rocky_or_gaseous = define_valley(p.radius, p.radius_std, p.period)
+            p.rocky_or_gaseous = define_valley(p.radius, valley_loc, p.radius_std, p.period)
             count += p.rocky_or_gaseous
 
         self.num_rocky_planets = count
@@ -69,7 +69,7 @@ class planet:
         self.rocky_or_gaseous = -1 # negative to start for error checking
         self.mass = -1.  # set to negative to start for error checking
 
-def setup_systems(planet_systems,Tmdot,Xiron,Xice):
+def setup_systems(planet_systems,Tmdot,Xiron,Xice, valley_loc=1.8):
     # this function takes the list of planetary multi-planet mixed_systems
     # it removes any systems that does not contain both types of planets above
     # and below the gap, it also calculates the mass of the rocky planet from a
@@ -84,7 +84,7 @@ def setup_systems(planet_systems,Tmdot,Xiron,Xice):
     mixed_systems = []
     for system in planet_systems:
         system.update_planet_info()
-        system.above_or_below_valley()
+        system.above_or_below_valley(valley_loc)
 
         if ((system.num_rocky_planets > 0) and (system.num_rocky_planets < system.number_of_planets) ):
 
@@ -120,15 +120,15 @@ def estimate_min_masses(planet_systems,Tmdot,Xiron,Xice):
 
     return
 
-def above_or_below_valley(system):
+def above_or_below_valley(system, valley_loc):
     for planet in system.planets:
-        planet.rocky_or_gaseous = define_valley(planet.radius, \
+        planet.rocky_or_gaseous = define_valley(planet.radius, valley_loc, \
         planet.radius_std, planet.period)
 
     return
 
-def define_valley(radius, radius_std, period):
-    if radius < 1.8:
+def define_valley(radius, valley_loc, radius_std, period):
+    if radius < valley_loc:
         #rocky planet
         return 1
     else:

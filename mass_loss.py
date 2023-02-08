@@ -141,7 +141,6 @@ def find_hardest_rocky(system,tmdot_Myr,Xiron,Xice,eff_option=3):
     if (counter ==0):
         print ("Error no rocky planet in system found to scale")
 
-
     system.index_rocky_to_scale = index_hardest
 
     # add mass-loss timescale for rocky planet to hardest one to strip
