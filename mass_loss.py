@@ -194,14 +194,15 @@ def min_mass_gaseous(p_rocky,p_gas,Tkh_scale_myr,Xiron,Xice,age_Myr,eff_option=3
                 # solver cannot find a lower core mass that it can solve structure for
                 # recommend trying a smaller increase in the min core mass
                 # or if happening for 0.1 Mearth then this is a reasonable upper-limit
-                #print("Error could not find suitable lower mass bound")
+                if (Mcore_min_try != 0.1):
+                    print("Error could not find suitable lower mass bound. Current bound is ", Mcore_min_try)
 
                 #return -Mcore_min_try, -5
                 return -5., -5
 
     if sol < 0.:
         # solver cannot find a suitable lower mass bound it can solve for
-        #print("Error, could not find a lower bound to solve from")
+        print("ERROR - could not find a lower mass bound to solve from.")
         return -6., -6
 
     result = minimize_scalar(tmdot_gas_minimise,bounds=(Mcore_min_try,Mcore_max),args=input_args,method="bounded")
@@ -221,7 +222,7 @@ def min_mass_gaseous(p_rocky,p_gas,Tkh_scale_myr,Xiron,Xice,age_Myr,eff_option=3
             return -2., -2
     else:
 
-        # failed to find maximum core mass for gaseous planet
+        print("ERROR - failed to find maximum core mass for gaseous planet.")
 
         return -3., -3
 
@@ -231,7 +232,7 @@ def min_mass_gaseous(p_rocky,p_gas,Tkh_scale_myr,Xiron,Xice,age_Myr,eff_option=3
 
     if (tmdot_min > p_rocky.tmdot):
 
-        # solution must be lower than Mcore_min_try Mearth
+        print('Solution must be lower than ' + Mcore_min_try + ' Mearth')
 
         #return -Mcore_min_try, -1
         return -1., -1
@@ -258,7 +259,8 @@ def min_mass_gaseous(p_rocky,p_gas,Tkh_scale_myr,Xiron,Xice,age_Myr,eff_option=3
         ## planet structure has a convective zone smaller than one scale height
         ## use result with caution
 
-        print ("Warning solution has thin convective zone")
+        print ("WARNING: solution has thin convective zone - \
+               the planet structure has a convective zone smaller than one scale height. Use result with caution!")
         return Msol, 2
 
     return Msol, 1

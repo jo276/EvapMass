@@ -18,8 +18,12 @@ Option 1 - constant efficiency
 Option 2 - escape velocity scaling
 Option 3 - Use of the mass-loss rates from Owen & Jackson (2012)
 
-C. New error flag - If the code detects that the planet's atmosphere (for the solved minimum) mass detects that the size of the convection zone is smaller than one-scale height it changes the error_flag to 2. Care should be taken when considering these planet structures as the approximation between Equations 2 and 3 in Owen & Wu (2017) breaks down for this case.
+C. New error flag - If the code detects that for the planet's atmosphere (for the solved minimum) the size of the convection zone is smaller than one-scale height it changes the error_flag to 2. Care should be taken when considering these planet structures as the approximation between Equations 2 and 3 in Owen & Wu (2017) breaks down for this case.
 
 Update - February 2023
 
 The location of the valley can now be chosen by the user with the flag 'valley_loc'. This is in Earth radii. The default is set to 1.8 Rearth, which is generally only true for FGK stars. So be careful if you are testing an M-dwarf system.
+
+Explanations of output flags:
+-2: no solution
+-5: mini-Neptune has a mass-loss timescale that is larger than the super-Earth for 0.1Mearth.
