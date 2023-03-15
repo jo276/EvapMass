@@ -1,3 +1,4 @@
+Talk by Beatriz Campos Estrada on EvapMass at the EMAC Workshop (February 2023): https://www.youtube.com/watch?v=N3J5DjIenXY&t=544s 
 
 EvapMass uses the photoevaporation driven evolution model of Owen & Wu (2013,2017) to predict the minimum masses of mini-Neptunes in multi-planet systems to be consistent with the photoevaporation model. If planetary masses are known it can also be used to test the system for photoevaporation - if the minimum masses predicted are consisted with the measured masses of the mini-Neptunes, then the system is consistent with photoevaporation.
 
